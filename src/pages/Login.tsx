@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Github, Chrome } from 'lucide-react';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { motion } from 'motion/react';
 
@@ -70,26 +70,6 @@ const Login = () => {
               <ArrowRight size={20} />
             </button>
           </form>
-
-          <div className="relative my-10">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--border)]"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[var(--card)] px-4 text-[var(--text-muted)] font-bold">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <button className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm">
-              <Chrome size={18} />
-              Google
-            </button>
-            <button className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm">
-              <Github size={18} />
-              GitHub
-            </button>
-          </div>
 
           <p className="text-center text-sm text-[var(--text-muted)] mt-10">
             Don't have an account? <a href="#" className="text-blue-500 font-bold hover:underline">Sign up</a>
