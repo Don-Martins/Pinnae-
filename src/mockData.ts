@@ -1,4 +1,4 @@
-import { Product, Project, Bundle } from './types';
+import { Product, Project, Bundle, User, Order } from './types';
 
 export const PRODUCTS: Product[] = [
   {
@@ -110,5 +110,56 @@ export const BUNDLES: Bundle[] = [
     projectIds: ['proj2'],
     productIds: ['p4', 'p2', 'p3', 'p6'],
     discountPercentage: 15
+  }
+];
+
+export const USERS: User[] = [
+  {
+    id: 'u1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    wishlist: ['p1', 'p4'],
+    savedProjects: ['proj1'],
+    orders: []
+  },
+  {
+    id: 'u2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
+    wishlist: ['p2'],
+    savedProjects: [],
+    orders: []
+  }
+];
+
+export const ORDERS: Order[] = [
+  {
+    id: '#PT-9283',
+    userId: 'u1',
+    userName: 'John Doe',
+    date: '2026-04-12',
+    total: 85.20,
+    status: 'Shipped',
+    items: [{ productId: 'p1', quantity: 2 }, { productId: 'p2', quantity: 1 }]
+  },
+  {
+    id: '#PT-9281',
+    userId: 'u2',
+    userName: 'Jane Smith',
+    date: '2026-04-10',
+    total: 142.00,
+    status: 'Delivered',
+    items: [{ productId: 'p4', quantity: 5 }]
+  },
+  {
+    id: '#PT-9275',
+    userId: 'u1',
+    userName: 'John Doe',
+    date: '2026-04-05',
+    total: 38.50,
+    status: 'Delivered',
+    items: [{ productId: 'p1', quantity: 1 }]
   }
 ];

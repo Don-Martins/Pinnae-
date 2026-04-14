@@ -48,8 +48,12 @@ export interface User {
 
 export interface Order {
   id: string;
+  userId: string;
+  userName: string;
   date: string;
   total: number;
-  status: 'Processing' | 'Shipped' | 'Delivered';
+  status: 'Pending' | 'Paid' | 'Shipped' | 'Delivered';
   items: { productId: string; quantity: number }[];
 }
+
+export type Category = 'Microcontrollers' | 'Sensors' | 'Actuators' | 'Power' | 'Kits';

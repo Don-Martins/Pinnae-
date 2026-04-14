@@ -18,12 +18,17 @@ const Navbar = () => {
   }, []);
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const isAdmin = user?.email.includes('admin') || user?.name.toLowerCase() === 'admin' || user?.email === 'donmartinz725@gmail.com';
 
   const navLinks = [
     { name: 'Marketplace', path: '/marketplace' },
     { name: 'DIY Projects', path: '/projects' },
     { name: 'Dashboard', path: '/dashboard' },
   ];
+
+  if (isAdmin) {
+    navLinks.push({ name: 'Admin', path: '/admin' });
+  }
 
   return (
     <nav className={cn(

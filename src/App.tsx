@@ -15,6 +15,7 @@ import DIYProjects from './pages/DIYProjects';
 import ProjectDetails from './pages/ProjectDetails';
 import Cart from './pages/Cart';
 import Dashboard from './pages/Dashboard';
+import AdminLayout from './pages/admin/AdminLayout';
 import Footer from './components/Footer';
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -35,27 +36,42 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const AppContent = () => {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!isAdminPath && <Navbar />}
+      <main className="flex-grow">
+        {isAdminPath ? (
+          <Routes>
+            <Route path="/admin/*" element={<AdminLayout />} />
+          </Routes>
+        ) : (
+          <PageWrapper>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/projects" element={<DIYProjects />} />
+              <Route path="/project/:id" element={<ProjectDetails />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/dashboard/*" element={<Dashboard />} />
+            </Routes>
+          </PageWrapper>
+        )}
+      </main>
+      {!isAdminPath && <Footer />}
+    </div>
+  );
+};
+
 export default function App() {
   return (
     <AppProvider>
       <Router>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <PageWrapper>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/projects" element={<DIYProjects />} />
-                <Route path="/project/:id" element={<ProjectDetails />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/dashboard/*" element={<Dashboard />} />
-              </Routes>
-            </PageWrapper>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </Router>
     </AppProvider>
   );
