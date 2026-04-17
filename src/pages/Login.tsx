@@ -71,6 +71,38 @@ const Login = () => {
             </button>
           </form>
 
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--border)]"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[var(--card)] px-4 text-[var(--text-muted)] font-bold">Or</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button 
+              onClick={() => {
+                login('admin@pinnacle.com');
+                navigate('/dashboard');
+              }}
+              className="w-full py-3 rounded-2xl border-2 border-purple-500 text-purple-500 text-xs font-bold hover:bg-purple-500 hover:text-white transition-all flex items-center justify-center gap-2"
+            >
+              Admin Demo
+              <ArrowRight size={16} />
+            </button>
+            <button 
+              onClick={() => {
+                login('seller@example.com');
+                navigate('/dashboard');
+              }}
+              className="w-full py-3 rounded-2xl border-2 border-blue-500 text-blue-500 text-xs font-bold hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center gap-2"
+            >
+              Seller Demo
+              <ArrowRight size={16} />
+            </button>
+          </div>
+
           <p className="text-center text-sm text-[var(--text-muted)] mt-10">
             Don't have an account? <a href="#" className="text-blue-500 font-bold hover:underline">Sign up</a>
           </p>

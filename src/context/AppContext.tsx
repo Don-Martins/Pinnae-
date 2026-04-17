@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, User } from '../types';
-import { PRODUCTS } from '../mockData';
+import { Product, CartItem, User, UserRole } from '../types';
+import { PRODUCTS, USERS } from '../mockData';
 
 interface AppContextType {
   theme: 'light' | 'dark';
@@ -15,6 +15,7 @@ interface AppContextType {
   user: User | null;
   login: (email: string) => void;
   logout: () => void;
+  switchRole: (role: UserRole) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedCategory: string;
@@ -109,26 +110,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const login = (email: string) => {
-    const mockUser: User = {
-      id: 'u1',
-      name: email.split('@')[0],
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      wishlist: [],
-      savedProjects: [],
-      orders: []
-    };
-    setUser(mockUser);
+    // Check if user exists in mock data
+    const existingUser = USERS.find(u => u.email === email);
+    
+    if (existingUser) {
+      setUser(existingUser);
+    } else {
+      // Create new buyer if not found
+      const mockUser: User = {
+        id: `u${Date.now()}`,
+        name: email.split('@')[0],
+        email,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        role: 'buyer',
+        wishlist: [],
+        savedProjects: [],
+        orders: []
+      };
+      setUser(mockUser);
+    }
   };
 
   const logout = () => setUser(null);
+
+  const switchRole = (role: UserRole) => {
+    if (user) {
+      setUser(prev => prev ? { ...prev, role } : null);
+    }
+  };
 
   return (
     <AppContext.Provider value={{
       theme, toggleTheme,
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       wishlist, toggleWishlist,
-      user, login, logout,
+      user, login, logout, switchRole,
       searchQuery, setSearchQuery,
       selectedCategory, setSelectedCategory
     }}>

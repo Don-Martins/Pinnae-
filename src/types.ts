@@ -1,13 +1,16 @@
+export type UserRole = 'buyer' | 'seller' | 'admin';
+
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
-  category: 'Microcontrollers' | 'Sensors' | 'Actuators' | 'Power' | 'Kits';
+  category: Category;
   image: string;
   rating: number;
   reviews: number;
   stock: number;
+  sellerId?: string;
 }
 
 export interface Project {
@@ -41,9 +44,10 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
+  role: UserRole;
   wishlist: string[]; // Product IDs
   savedProjects: string[]; // Project IDs
-  orders: Order[];
+  orders: string[]; // Order IDs
 }
 
 export interface Order {

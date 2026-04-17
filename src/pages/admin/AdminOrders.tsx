@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Search, Filter, MoreVertical, Eye, Download, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useAdminContext } from '../../context/AdminContext';
+import { useDashboardContext } from '../../context/DashboardContext';
 import { Order } from '../../types';
 import { cn } from '../../lib/utils';
 import { motion } from 'motion/react';
 
 const AdminOrders = () => {
-  const { orders, updateOrderStatus } = useAdminContext();
+  const { orders, updateOrderStatus } = useDashboardContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 

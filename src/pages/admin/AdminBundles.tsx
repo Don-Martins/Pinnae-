@@ -1,18 +1,63 @@
 import React, { useState } from 'react';
 import { Box, Plus, Edit2, Trash2, Search, X, Check } from 'lucide-react';
-import { useAdminContext } from '../../context/AdminContext';
+import { useDashboardContext } from '../../context/DashboardContext';
 import { Bundle, Product } from '../../types';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 const AdminBundles = () => {
-  const { bundles, products, deleteBundle } = useAdminContext();
+  const { bundles, products, addBundle, updateBundle, deleteBundle } = useDashboardContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBundle, setEditingBundle] = useState<Bundle | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [bundleName, setBundleName] = useState('');
+  const [discount, setDiscount] = useState(10);
 
   const filteredBundles = bundles.filter(b => 
     b.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleOpenModal = (bundle: Bundle | null = null) => {
+    setEditingBundle(bundle);
+    setBundleName(bundle?.name || '');
+    setDiscount(bundle?.discountPercentage || 10);
+    setSelectedProductIds(bundle?.productIds || []);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingBundle(null);
+    setBundleName('');
+    setDiscount(10);
+    setSelectedProductIds([]);
+    setIsModalOpen(false);
+  };
+
+  const toggleProductSelection = (productId: string) => {
+    setSelectedProductIds(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
+  };
+
+  const handleSubmit = () => {
+    if (!bundleName || selectedProductIds.length === 0) return;
+
+    const bundleData = {
+      name: bundleName,
+      discountPercentage: discount,
+      productIds: selectedProductIds,
+    };
+
+    if (editingBundle) {
+      updateBundle(editingBundle.id, bundleData);
+    } else {
+      addBundle(bundleData);
+    }
+    handleCloseModal();
+  };
 
   return (
     <div className="space-y-8">
@@ -22,7 +67,7 @@ const AdminBundles = () => {
           <p className="text-[var(--text-muted)] mt-1">Create smart product packages with discounts.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => handleOpenModal()}
           className="btn-primary flex items-center gap-2"
         >
           <Plus size={20} />
@@ -63,7 +108,10 @@ const AdminBundles = () => {
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-lg transition-colors">
+                <button 
+                  onClick={() => handleOpenModal(bundle)}
+                  className="p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-lg transition-colors"
+                >
                   <Edit2 size={16} />
                 </button>
                 <button 
@@ -95,7 +143,7 @@ const AdminBundles = () => {
         ))}
       </div>
 
-      {/* Modal Placeholder */}
+      {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -103,7 +151,7 @@ const AdminBundles = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
+              onClick={handleCloseModal}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
             <motion.div
@@ -113,8 +161,10 @@ const AdminBundles = () => {
               className="relative w-full max-w-2xl bg-[var(--card)] rounded-[32px] shadow-2xl overflow-hidden border border-[var(--border)] p-8"
             >
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-display font-bold">Create Bundle</h2>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-[var(--section)] rounded-xl text-[var(--text-muted)]">
+                <h2 className="text-2xl font-display font-bold">
+                  {editingBundle ? 'Edit Bundle' : 'Create Bundle'}
+                </h2>
+                <button onClick={handleCloseModal} className="p-2 hover:bg-[var(--section)] rounded-xl text-[var(--text-muted)]">
                   <X size={24} />
                 </button>
               </div>
@@ -122,35 +172,62 @@ const AdminBundles = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Bundle Name</label>
-                    <input className="w-full px-4 py-3 bg-[var(--section)] border border-[var(--border)] rounded-2xl focus:outline-none focus:border-blue-500 transition-colors" />
+                    <input 
+                      value={bundleName}
+                      onChange={(e) => setBundleName(e.target.value)}
+                      placeholder="e.g. Starter Kit"
+                      className="w-full px-4 py-3 bg-[var(--section)] border border-[var(--border)] rounded-2xl focus:outline-none focus:border-blue-500 transition-colors" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Discount (%)</label>
-                    <input type="number" className="w-full px-4 py-3 bg-[var(--section)] border border-[var(--border)] rounded-2xl focus:outline-none focus:border-blue-500 transition-colors" />
+                    <input 
+                      type="number" 
+                      value={discount}
+                      onChange={(e) => setDiscount(Number(e.target.value))}
+                      className="w-full px-4 py-3 bg-[var(--section)] border border-[var(--border)] rounded-2xl focus:outline-none focus:border-blue-500 transition-colors" 
+                    />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Select Products</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {products.map(product => (
-                      <div key={product.id} className="flex items-center justify-between p-3 bg-[var(--section)] border border-[var(--border)] rounded-xl cursor-pointer hover:border-blue-500 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg overflow-hidden bg-white">
-                            <img src={product.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    {products.map(product => {
+                      const isSelected = selectedProductIds.includes(product.id);
+                      return (
+                        <div 
+                          key={product.id} 
+                          onClick={() => toggleProductSelection(product.id)}
+                          className={cn(
+                            "flex items-center justify-between p-3 bg-[var(--section)] border rounded-xl cursor-pointer transition-colors",
+                            isSelected ? "border-blue-500 bg-blue-500/5" : "border-[var(--border)] hover:border-blue-500/50"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden bg-white">
+                              <img src={product.image} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                            </div>
+                            <div className="text-xs font-bold truncate max-w-[120px]">{product.name}</div>
                           </div>
-                          <div className="text-xs font-bold truncate max-w-[120px]">{product.name}</div>
+                          <div className={cn(
+                            "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors",
+                            isSelected ? "border-blue-500 bg-blue-500" : "border-[var(--border)]"
+                          )}>
+                            {isSelected && <Check size={14} className="text-white" />}
+                          </div>
                         </div>
-                        <div className="w-6 h-6 rounded-full border-2 border-[var(--border)] flex items-center justify-center">
-                          {/* Simulated selected state */}
-                          {Math.random() > 0.7 && <Check size={14} className="text-blue-500" />}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
                 
-                <button className="btn-primary w-full py-4 sticky bottom-0">Create Bundle</button>
+                <button 
+                  onClick={handleSubmit}
+                  className="btn-primary w-full py-4 sticky bottom-0"
+                >
+                  {editingBundle ? 'Save Changes' : 'Create Bundle'}
+                </button>
               </div>
             </motion.div>
           </div>

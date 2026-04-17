@@ -10,7 +10,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/arduino/600/600',
     rating: 4.9,
     reviews: 128,
-    stock: 45
+    stock: 45,
+    sellerId: 'seller-1'
   },
   {
     id: 'p2',
@@ -21,7 +22,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/sensor/600/600',
     rating: 4.7,
     reviews: 85,
-    stock: 120
+    stock: 120,
+    sellerId: 'seller-1'
   },
   {
     id: 'p3',
@@ -32,7 +34,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/servo/600/600',
     rating: 4.5,
     reviews: 210,
-    stock: 300
+    stock: 300,
+    sellerId: 'seller-1'
   },
   {
     id: 'p4',
@@ -43,7 +46,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/esp32/600/600',
     rating: 4.8,
     reviews: 156,
-    stock: 80
+    stock: 80,
+    sellerId: 'seller-1'
   },
   {
     id: 'p5',
@@ -54,7 +58,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/oled/600/600',
     rating: 4.6,
     reviews: 92,
-    stock: 65
+    stock: 65,
+    sellerId: 'seller-1'
   },
   {
     id: 'p6',
@@ -65,7 +70,8 @@ export const PRODUCTS: Product[] = [
     image: 'https://picsum.photos/seed/battery/600/600',
     rating: 4.4,
     reviews: 45,
-    stock: 30
+    stock: 30,
+    sellerId: 'seller-1'
   }
 ];
 
@@ -115,22 +121,44 @@ export const BUNDLES: Bundle[] = [
 
 export const USERS: User[] = [
   {
+    id: 'admin-1',
+    name: 'Admin',
+    email: 'admin@pinnacle.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    role: 'admin',
+    wishlist: [],
+    savedProjects: [],
+    orders: []
+  },
+  {
+    id: 'seller-1',
+    name: 'Tech Seller',
+    email: 'seller@example.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Seller',
+    role: 'seller',
+    wishlist: [],
+    savedProjects: [],
+    orders: []
+  },
+  {
     id: 'u1',
     name: 'John Doe',
     email: 'john@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    role: 'buyer',
     wishlist: ['p1', 'p4'],
     savedProjects: ['proj1'],
-    orders: []
+    orders: ['#PT-9283', '#PT-9275']
   },
   {
     id: 'u2',
     name: 'Jane Smith',
     email: 'jane@example.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
+    role: 'buyer',
     wishlist: ['p2'],
     savedProjects: [],
-    orders: []
+    orders: ['#PT-9281']
   }
 ];
 

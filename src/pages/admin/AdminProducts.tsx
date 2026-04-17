@@ -12,13 +12,13 @@ import {
   X,
   Image as ImageIcon
 } from 'lucide-react';
-import { useAdminContext } from '../../context/AdminContext';
+import { useDashboardContext } from '../../context/DashboardContext';
 import { Product, Category } from '../../types';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 const AdminProducts = () => {
-  const { products, categories, addProduct, updateProduct, deleteProduct } = useAdminContext();
+  const { products, categories, addProduct, updateProduct, deleteProduct } = useDashboardContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState('');

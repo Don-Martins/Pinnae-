@@ -3,14 +3,14 @@ import { Settings, User, Bell, Shield, Moon, Sun, Globe, Save } from 'lucide-rea
 import { useAppContext } from '../../context/AppContext';
 import { cn } from '../../lib/utils';
 
-const AdminSettings = () => {
+const DashboardSettings = () => {
   const { user, theme, toggleTheme } = useAppContext();
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-display font-bold tracking-tight">Settings</h1>
-        <p className="text-[var(--text-muted)] mt-1">Manage your admin profile and dashboard preferences.</p>
+        <p className="text-[var(--text-muted)] mt-1">Manage your profile and dashboard preferences.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -47,7 +47,7 @@ const AdminSettings = () => {
                 {user?.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="text-xl font-bold">Admin Profile</h3>
+                <h3 className="text-xl font-bold">My Profile</h3>
                 <p className="text-sm text-[var(--text-muted)] mt-1">Update your photo and personal details.</p>
                 <div className="flex gap-3 mt-4">
                   <button className="btn-primary py-2 px-4 text-xs">Change Photo</button>
@@ -108,4 +108,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export default DashboardSettings;

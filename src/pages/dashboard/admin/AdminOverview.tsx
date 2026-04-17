@@ -6,15 +6,14 @@ import {
   Users, 
   ArrowUpRight, 
   ArrowDownRight,
-  ChevronRight,
   MoreHorizontal
 } from 'lucide-react';
-import { useAdminContext } from '../../context/AdminContext';
-import { cn } from '../../lib/utils';
+import { useDashboardContext } from '../../../context/DashboardContext';
+import { cn } from '../../../lib/utils';
 import { motion } from 'motion/react';
 
 const AdminOverview = () => {
-  const { products, orders, users } = useAdminContext();
+  const { products, orders, users } = useDashboardContext();
 
   const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
   
@@ -76,15 +75,15 @@ const AdminOverview = () => {
     <div className="space-y-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold tracking-tight">Dashboard Overview</h1>
-          <p className="text-[var(--text-muted)] mt-1">Welcome back, here's what's happening today.</p>
+          <h1 className="text-3xl font-display font-bold tracking-tight">Admin Console</h1>
+          <p className="text-[var(--text-muted)] mt-1">Full system overview and advanced controls.</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="px-4 py-2 bg-[var(--card)] border border-[var(--border)] rounded-xl text-sm font-medium">
-            Last 30 Days
+            System Status: <span className="text-green-500 font-bold uppercase text-[10px] ml-1">Healthy</span>
           </div>
           <button className="btn-primary flex items-center gap-2">
-            Download Report
+            System Audit
           </button>
         </div>
       </div>
@@ -123,11 +122,11 @@ const AdminOverview = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* Recent Orders Table */}
+        {/* Recent Activity Table */}
         <div className="xl:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold">Recent Orders</h3>
-            <button className="text-sm text-blue-500 font-bold hover:underline">View All Orders</button>
+            <h3 className="text-xl font-bold">System Activity</h3>
+            <button className="text-sm text-blue-500 font-bold hover:underline transition-all">View Analytics</button>
           </div>
           <div className="card-premium p-0 overflow-hidden">
             <div className="overflow-x-auto">
@@ -137,7 +136,6 @@ const AdminOverview = () => {
                     <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Order ID</th>
                     <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Customer</th>
                     <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Status</th>
-                    <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Date</th>
                     <th className="px-6 py-4 text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] text-right">Amount</th>
                   </tr>
                 </thead>
@@ -147,7 +145,7 @@ const AdminOverview = () => {
                       <td className="px-6 py-4 font-mono text-sm font-medium">{order.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 text-xs font-bold">
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 text-xs font-bold ring-1 ring-blue-500/20">
                             {order.userName.charAt(0)}
                           </div>
                           <span className="font-medium text-sm">{order.userName}</span>
@@ -164,7 +162,6 @@ const AdminOverview = () => {
                           {order.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[var(--text-muted)]">{order.date}</td>
                       <td className="px-6 py-4 text-right font-bold text-sm">${order.total.toFixed(2)}</td>
                     </tr>
                   ))}
@@ -174,10 +171,10 @@ const AdminOverview = () => {
           </div>
         </div>
 
-        {/* Top Products */}
+        {/* Global Inventory Status */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold">Top Products</h3>
+            <h3 className="text-xl font-bold">Inventory Alerts</h3>
             <button className="p-2 hover:bg-[var(--section)] rounded-lg text-[var(--text-muted)]">
               <MoreHorizontal size={20} />
             </button>
@@ -185,7 +182,7 @@ const AdminOverview = () => {
           <div className="space-y-4">
             {products.slice(0, 4).map((product) => (
               <div key={product.id} className="card-premium p-4 flex items-center gap-4 group hover:border-blue-500/30 transition-all">
-                <div className="w-16 h-16 rounded-xl overflow-hidden bg-[var(--section)] shrink-0">
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-[var(--section)] shrink-0 border border-[var(--border)]">
                   <img 
                     src={product.image} 
                     alt={product.name} 
@@ -199,11 +196,11 @@ const AdminOverview = () => {
                   <div className="flex items-center gap-2 mt-2">
                     <div className="flex-grow h-1.5 bg-[var(--section)] rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-blue-500 rounded-full" 
-                        style={{ width: `${Math.random() * 60 + 40}%` }} 
+                        className={cn("h-full rounded-full", product.stock < 50 ? "bg-orange-500" : "bg-blue-500")} 
+                        style={{ width: `${Math.min(product.stock, 100)}%` }} 
                       />
                     </div>
-                    <span className="text-[10px] font-bold text-[var(--text-muted)]">85%</span>
+                    <span className="text-[10px] font-bold text-[var(--text-muted)]">{product.stock} units</span>
                   </div>
                 </div>
               </div>
