@@ -48,6 +48,8 @@ export interface User {
   wishlist: string[]; // Product IDs
   savedProjects: string[]; // Project IDs
   orders: string[]; // Order IDs
+  access_token?: string;
+  token_type?: string;
 }
 
 export interface Order {

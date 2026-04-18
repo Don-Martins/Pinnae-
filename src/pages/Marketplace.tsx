@@ -1,39 +1,70 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal, ChevronDown, LayoutGrid, List } from 'lucide-react';
-import { PRODUCTS } from '../mockData';
+import { marketplaceService } from '../services/marketplaceService';
 import ProductCard from '../components/ProductCard';
 import { useAppContext } from '../context/AppContext';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import Skeleton from '../components/Skeleton';
-
-const CATEGORIES = ['All', 'Microcontrollers', 'Sensors', 'Actuators', 'Power', 'Kits'];
+import { Product } from '../types';
 
 const Marketplace = () => {
   const { searchQuery, setSearchQuery, selectedCategory, setSelectedCategory } = useAppContext();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(['All']);
   const [sortBy, setSortBy] = useState('Featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
   const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
+  // Fetch categories
+  useEffect(() => {
+    marketplaceService.getCategories().then(data => {
+      if (Array.isArray(data)) {
+        setCategories(['All', ...data.map((c: any) => c.name)]);
+      }
+    }).catch(console.error);
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    }).sort((a, b) => {
-      if (sortBy === 'Price: Low to High') return a.price - b.price;
-      if (sortBy === 'Price: High to Low') return b.price - a.price;
-      if (sortBy === 'Rating') return b.rating - a.rating;
-      return 0;
+  // Fetch products
+  useEffect(() => {
+    setIsLoading(true);
+    const params: any = {};
+    if (selectedCategory !== 'All') {
+      params.category = selectedCategory.toLowerCase();
+    }
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    
+    // Map sortBy to backend expected values
+    if (sortBy === 'Price: Low to High') params.sort = 'price_low';
+    if (sortBy === 'Price: High to Low') params.sort = 'price_high';
+    if (sortBy === 'Rating') params.sort = 'rating';
+
+    marketplaceService.getProducts(params).then(data => {
+      // Laravel pagination returns an object with a 'data' array
+      if (data && data.data) {
+        const mappedProducts = data.data.map((p: any) => ({
+          id: String(p.id),
+          name: p.name,
+          description: p.description,
+          price: Number(p.price),
+          category: p.category ? p.category.name : 'Uncategorized',
+          image: p.image_url,
+          rating: p.rating || 0,
+          reviews: p.reviews_count || 0,
+          stock: p.stock
+        }));
+        setProducts(mappedProducts);
+      }
+      setIsLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setIsLoading(false);
     });
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [selectedCategory, searchQuery, sortBy]);
+
+  const filteredProducts = products; // Backend handles filtering
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 py-12">
@@ -69,7 +100,7 @@ const Marketplace = () => {
               Categories
             </h3>
             <div className="flex flex-col gap-2">
-              {CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}

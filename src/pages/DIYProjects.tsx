@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Clock, BarChart3, ArrowRight } from 'lucide-react';
-import { PROJECTS } from '../mockData';
+import { marketplaceService } from '../services/marketplaceService';
 import ProjectCard from '../components/ProjectCard';
 import { motion } from 'motion/react';
 import Skeleton from '../components/Skeleton';
+import { Project as ProjectType } from '../types';
 
 const DIYProjects = () => {
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [projects, setProjects] = useState<ProjectType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200);
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    marketplaceService.getProjects().then(data => {
+      if (Array.isArray(data)) {
+        const mappedProjects = data.map((p: any) => ({
+          id: String(p.id),
+          name: p.title,
+          description: p.description,
+          image: p.image_url,
+          videoUrl: p.video_url,
+          difficulty: p.difficulty,
+          timeEstimate: p.time_estimate,
+          bundleId: p.bundle_id ? String(p.bundle_id) : '',
+          components: p.components ? p.components.map((c: any) => String(c.id)) : []
+        }));
+        setProjects(mappedProjects);
+      }
+      setIsLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setIsLoading(false);
+    });
   }, []);
 
   return (
@@ -55,7 +75,7 @@ const DIYProjects = () => {
             </div>
           ))
         ) : (
-          PROJECTS.map((project) => (
+          projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))
         )}

@@ -1,17 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, ShieldCheck, Truck, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import { PRODUCTS } from '../mockData';
+import { marketplaceService } from '../services/marketplaceService';
 import { motion, AnimatePresence } from 'motion/react';
+import { Product } from '../types';
 
 const Cart = () => {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useAppContext();
-  const [isCheckingOut, setIsCheckingOut] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+  const { cart, removeFromCart, updateQuantity, clearCart, user } = useAppContext();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    // If we're not using API-backed cart with full product info, we need the catalog
+    marketplaceService.getProducts({ paginate: 100 }).then(data => {
+      if (data && data.data) {
+        setAllProducts(data.data.map((p: any) => ({
+          id: String(p.id),
+          name: p.name,
+          category: p.category?.name || 'Uncategorized',
+          price: Number(p.price),
+          image: p.image_url
+        })));
+      }
+    }).catch(console.error);
+  }, []);
 
   const cartItems = cart.map(item => {
-    const product = PRODUCTS.find(p => p.id === item.productId);
+    // Try to find the product in our local cache or use the embedded one if available
+    const product = (item as any).product || allProducts.find(p => p.id === String(item.productId));
     return { ...item, product };
   }).filter(item => item.product);
 
